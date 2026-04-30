@@ -15,6 +15,11 @@ export class AiService {
   }
 
   async generateSummary(session: Omit<FocusSession, 'aiSummary'>): Promise<string> {
+    const terminalTabs = session.terminal.tabs
+      .slice(0, 3)
+      .map(tab => `${tab.name} (${tab.shellType} @ ${tab.cwd})${tab.lastCommand ? ` last: ${tab.lastCommand}` : ''}`)
+      .join(' | ');
+
     const prompt = `
 You are helping a developer re-enter a coding session after an interruption.
 Write a 3–4 sentence "where you left off" summary they can read in 10 seconds.
@@ -31,6 +36,7 @@ Session context:
 - Recent commits: ${session.git.recentCommits.slice(0, 3).join(' | ') || 'none'}
 - Changes: ${session.git.diffStat}
 - Staged files: ${session.git.stagedFiles.join(', ') || 'none'}
+- Terminals: ${terminalTabs || 'none'}
 
 Code around cursor:
 \`\`\`

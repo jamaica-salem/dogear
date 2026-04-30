@@ -14,7 +14,7 @@ export function activate(context: vscode.ExtensionContext) {
   const treeProvider = new SessionTreeProvider(snapshotService);
 
   // Sidebar
-  vscode.window.registerTreeDataProvider('focusModeSessionList', treeProvider);
+  const treeViewDisposable = vscode.window.registerTreeDataProvider('focusModeSessionList', treeProvider);
 
   // Status bar
   const statusBar = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 100);
@@ -22,7 +22,7 @@ export function activate(context: vscode.ExtensionContext) {
   statusBar.tooltip = 'Pause and save your session context';
   statusBar.command = 'focusMode.pause';
   statusBar.show();
-  context.subscriptions.push(statusBar);
+  context.subscriptions.push(statusBar, treeViewDisposable, snapshotService);
 
   // ── PAUSE command ──────────────────────────────────────────
   const pauseCmd = vscode.commands.registerCommand('focusMode.pause', async () => {

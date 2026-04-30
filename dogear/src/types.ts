@@ -13,9 +13,20 @@ export interface GitContext {
   stagedFiles: string[];
 }
 
-export interface TerminalContext {
+export interface TerminalTab {
+  name: string;
   cwd: string;
-  lastCommands: string[];    // best-effort, may be empty
+  shellType: string;         // e.g. "bash", "zsh", "powershell"
+  shellPath: string;         // absolute path when known
+  lastCommand?: string;      // best-effort, requires shell integration
+}
+
+export interface TerminalContext {
+  cwd: string;               // fallback for older snapshots / workspace default
+  lastCommands: string[];    // legacy aggregate list for compatibility
+  tabs: TerminalTab[];
+  activeTabName: string;
+  activeTabIndex: number;
 }
 
 export interface FocusSession {

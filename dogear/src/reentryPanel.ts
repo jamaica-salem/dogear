@@ -32,6 +32,20 @@ export class ReentryPanel {
       .map(c => `<li>${c}</li>`)
       .join('');
 
+    const terminalTabs = session.terminal?.tabs?.length
+      ? session.terminal.tabs
+      : (session.terminal?.cwd
+        ? [{ name: 'Terminal', cwd: session.terminal.cwd, shellType: 'default', shellPath: '', lastCommand: undefined }]
+        : []);
+    const terminals = terminalTabs
+      .map(tab => {
+        const lastCommand = tab.lastCommand
+          ? `<div class="line">Last command: <code>${tab.lastCommand}</code></div>`
+          : '';
+        return `<li>${tab.name} <span class="line">${tab.shellType} · ${tab.cwd}</span>${lastCommand}</li>`;
+      })
+      .join('');
+
     return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -59,6 +73,9 @@ export class ReentryPanel {
 
 <h2>Recent commits</h2>
 <ul>${commits || '<li>None recorded</li>'}</ul>
+
+<h2>Terminals</h2>
+<ul>${terminals || '<li>None recorded</li>'}</ul>
 </body>
 </html>`;
   }
