@@ -19,6 +19,8 @@ Capture your workspace state with a single command:
 - Open files and tabs
 - Cursor positions
 - Editor layout (split views)
+- Terminal tabs with cwd and shell type
+- Optional per-terminal last command capture
 - Git branch and recent commits
 - Working changes summary
 
@@ -28,6 +30,8 @@ Capture your workspace state with a single command:
 - Reopen all files in their original layout
 - Restore cursor positions
 - Focus on your last active file
+- Recreate terminal tabs with restored cwd/shell
+- Optionally replay the last command in each terminal
 
 ---
 
@@ -68,4 +72,3 @@ Whether interrupted by meetings, switching tasks, or ending your day, Dogear hel
 1. Open **Extensions** (`Ctrl+Shift+X`)
 2. Search for **Dogear*
 3. Click **Install**
-

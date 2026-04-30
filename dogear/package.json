@@ -20,6 +20,16 @@
           "default": "",
           "description": "Your Groq API key for AI-powered session summaries.",
           "markdownDescription": "Get a free key (no credit card) at https://console.groq.com"
+        },
+        "focusMode.captureTerminalLastCommand": {
+          "type": "boolean",
+          "default": true,
+          "description": "Capture the most recent command per terminal tab when shell integration data is available."
+        },
+        "focusMode.restoreTerminalLastCommand": {
+          "type": "boolean",
+          "default": false,
+          "description": "Replay captured terminal commands on resume. Disabled by default for safety."
         }
       }
     },
