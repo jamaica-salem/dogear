@@ -1,26 +1,99 @@
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
+import { SnapshotService } from './snapshotService';
+import { RestoreService } from './restoreService';
+import { AiService } from './aiService';
+import { SessionTreeProvider } from './sessionTreeProvider';
+import { ReentryPanel } from './reentryPanel';
+import { FocusSession } from './types';
 
-// This method is called when your extension is activated
-// Your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
+  const workspaceRoot = vscode.workspace.workspaceFolders?.[0].uri.fsPath ?? '';
+  const snapshotService = new SnapshotService(workspaceRoot);
+  const restoreService = new RestoreService();
+  const aiService = new AiService();
+  const treeProvider = new SessionTreeProvider(snapshotService);
 
-	// Use the console to output diagnostic information (console.log) and errors (console.error)
-	// This line of code will only be executed once when your extension is activated
-	console.log('Congratulations, your extension "dogear" is now active!');
+  // Sidebar
+  vscode.window.registerTreeDataProvider('focusModeSessionList', treeProvider);
 
-	// The command has been defined in the package.json file
-	// Now provide the implementation of the command with registerCommand
-	// The commandId parameter must match the command field in package.json
-	const disposable = vscode.commands.registerCommand('dogear.helloWorld', () => {
-		// The code you place here will be executed every time your command is executed
-		// Display a message box to the user
-		vscode.window.showInformationMessage('Hello World from Dogear!');
-	});
+  // Status bar
+  const statusBar = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 100);
+  statusBar.text = '$(record) Focus';
+  statusBar.tooltip = 'Pause and save your session context';
+  statusBar.command = 'focusMode.pause';
+  statusBar.show();
+  context.subscriptions.push(statusBar);
 
-	context.subscriptions.push(disposable);
+  // ── PAUSE command ──────────────────────────────────────────
+  const pauseCmd = vscode.commands.registerCommand('focusMode.pause', async () => {
+    const name = await vscode.window.showInputBox({
+      prompt: 'Name this session (press Enter for auto-name)',
+      placeHolder: 'e.g. auth-refactor',
+    });
+    if (name === undefined) { return; } // user pressed Escape
+
+    const sessionName = name.trim() || `session-${new Date().toISOString().slice(0, 16)}`;
+
+    await vscode.window.withProgress(
+      { location: vscode.ProgressLocation.Notification, title: 'Saving session…', cancellable: false },
+      async () => {
+        const session = await snapshotService.capture(sessionName);
+
+        // Generate AI summary (non-blocking — save first, update after)
+        snapshotService.save(session);
+        treeProvider.refresh();
+
+        try {
+          const summary = await aiService.generateSummary(session);
+          session.aiSummary = summary;
+          snapshotService.save(session); // overwrite with summary
+          treeProvider.refresh();
+        } catch (e) {
+          session.aiSummary = 'AI summary unavailable — check your API key in settings.';
+          snapshotService.save(session);
+        }
+      }
+    );
+
+    vscode.window.showInformationMessage(`Session "${sessionName}" saved.`);
+  });
+
+  // ── RESUME command ─────────────────────────────────────────
+  const resumeCmd = vscode.commands.registerCommand('focusMode.resume', async (session?: FocusSession) => {
+    if (!session) {
+      // Called from command palette — show quick pick
+      const sessions = snapshotService.listAll();
+      if (sessions.length === 0) {
+        vscode.window.showInformationMessage('No saved sessions. Use "Focus: Pause" to save one.');
+        return;
+      }
+      const picked = await vscode.window.showQuickPick(
+        sessions.map(s => ({ label: s.name, description: new Date(s.createdAt).toLocaleString(), session: s })),
+        { placeHolder: 'Select a session to resume' }
+      );
+      if (!picked) { return; }
+      session = picked.session;
+    }
+
+    ReentryPanel.show(session);
+    await restoreService.restore(session);
+  });
+
+  // ── DELETE command ─────────────────────────────────────────
+  const deleteCmd = vscode.commands.registerCommand('focusMode.deleteSession', async (item: any) => {
+    const session: FocusSession = item?.session ?? item;
+    const confirm = await vscode.window.showWarningMessage(
+      `Delete session "${session.name}"?`,
+      { modal: true },
+      'Delete'
+    );
+    if (confirm === 'Delete') {
+      snapshotService.delete(session.id);
+      treeProvider.refresh();
+    }
+  });
+
+  context.subscriptions.push(pauseCmd, resumeCmd, deleteCmd);
 }
 
-// This method is called when your extension is deactivated
 export function deactivate() {}
