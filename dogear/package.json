@@ -12,10 +12,47 @@
   "activationEvents": [],
   "main": "./dist/extension.js",
   "contributes": {
+    "configuration": {
+      "title": "Dogear",
+      "properties": {
+        "focusMode.groqApiKey": {
+          "type": "string",
+          "default": "",
+          "description": "Your Groq API key for AI-powered session summaries.",
+          "markdownDescription": "Get a free key (no credit card) at https://console.groq.com"
+        }
+      }
+    },
+    "views": {
+      "explorer": [
+        {
+          "id": "focusModeSessionList",
+          "name": "Focus Sessions"
+        }
+      ]
+    },
+    "menus": {
+      "view/item/context": [
+        {
+          "command": "focusMode.deleteSession",
+          "when": "viewItem == focusSession",
+          "group": "inline"
+        }
+      ]
+    },
     "commands": [
       {
-        "command": "dogear.helloWorld",
-        "title": "Hello World"
+      "command": "focusMode.pause",
+      "title": "Focus: Pause — Save Session"
+      },
+      {
+        "command": "focusMode.resume",
+        "title": "Focus: Resume a Session"
+      },
+      {
+        "command": "focusMode.deleteSession",
+        "title": "Delete",
+        "icon": "$(trash)"
       }
     ]
   },
