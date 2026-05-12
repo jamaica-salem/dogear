@@ -1,10 +1,10 @@
-# 🧠 Dogear — VS Code Extension
+# Dogear — VS Code Extension
 
 > **Save your coding context. Pick up exactly where you left off — files, cursor, and AI context with AI guidance.**
 
 ---
 
-## 🚀 Overview
+## Overview
 
 **Dogear** is a Visual Studio Code extension built to eliminate the friction of context switching.
 
@@ -12,9 +12,9 @@ It captures your full development state when you pause — including open files,
 
 ---
 
-## ✨ Key Features
+## Key Features
 
-### ⏸️ Session Snapshot (Pause)
+### Session Snapshot (Pause)
 Capture your workspace state with a single command:
 - Open files and tabs
 - Cursor positions
@@ -26,7 +26,7 @@ Capture your workspace state with a single command:
 
 ---
 
-### ▶️ Instant Resume
+### Instant Resume
 - Reopen all files in their original layout
 - Restore cursor positions
 - Focus on your last active file
@@ -35,28 +35,28 @@ Capture your workspace state with a single command:
 
 ---
 
-### 🤖 AI-Powered Re-entry Summary
+### AI-Powered Re-entry Summary
 - Short, actionable summary of your last work session
 - Highlights key files, changes, and next steps
 - Designed to be read in seconds
 
 ---
 
-### 📂 Session History Sidebar
+### Session History Sidebar
 - View all saved sessions
 - Resume with one click
 - Preview summaries via hover
 
 ---
 
-### 🧩 Seamless Integration
+### Seamless Integration
 - Status bar shortcut for quick access
 - Command palette support
 - Lightweight and non-intrusive
 
 ---
 
-## 🎯 Purpose
+## Purpose
 
 This extension solves a common developer problem:
 
@@ -66,7 +66,7 @@ Whether interrupted by meetings, switching tasks, or ending your day, Dogear hel
 
 ---
 
-## 🛠️ Installation
+## Installation
 
 ### From VS Code Marketplace
 1. Open **Extensions** (`Ctrl+Shift+X`)
