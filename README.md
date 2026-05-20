@@ -1,4 +1,4 @@
-# Dogear — VS Code Extension
+# Dogear
 
 > **Save your coding context. Pick up exactly where you left off — files, cursor, and AI context with AI guidance.**
 
